@@ -1,0 +1,7 @@
+{
+    "server_url" : "http://localhost/shortner/server",
+    "db_host" : "localhost",
+    "db_name": "urlshortner",
+    "db_user": "root",
+    "db_password": "password"
+}

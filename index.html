@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <!-- <script src="./scripts.js"></script> -->
+    <title>URL shortner Vue.js app</title>
+</head>
+
+<body>
+    <div id="app" class="jumbotron">
+        <h1 class="display-4">PHP/Vue Url Shortner App</h1>
+        <p class="lead">This is a very simple URL shortner app built in PHP/Vue JS</p>
+        <hr class="my-4">
+        <div class="container-fluid">
+            <div class="form-group">
+                <label for="inputUrl">Enter URL</label>
+                <input type="text" class="form-control" id="inputUrl" v-model="urlQuery" aria-describedby="emailHelp"
+                    placeholder="Eg. http://www.google.com">
+                <div v-if="error === 1" class="alert alert-danger" role="alert">
+                    {{errorMessage}}
+                </div>
+
+                <div v-if="success == 1" class="alert alert-success" role="alert">
+                    <p>Your shorten Url <a v-bind:href="shortenUrlString" class="alert-link">{{ shortenUrlString }}</a>.
+                        Give it a click.
+                        <hr>
+                </div>
+            </div>
+            <button @click="shortenUrl()" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+
+        const apiUrl = 'http://localhost/shortner/server';
+        const app = new Vue({
+            el: '#app',
+            data: {
+                error: 0,
+                errorMessage: "",
+                urlQuery: "",
+                success: 0,
+                shortenUrlString: "",
+            },
+            methods: {
+                shortenUrl: function (e) {
+                    this.success = 0;
+                    if (!this.validateUrl(this.urlQuery)) {
+                        this.error = 1;
+                        this.errorMessage = "Please enter a valid URL";
+                    } else {
+                        this.error = 0;
+                        this.errorMessage = "";
+                        this.execute();
+                    }
+                },
+                execute: function () {
+                    axios
+                        .get(apiUrl + '?url=' + this.urlQuery + "&format=json")
+                        .then(async res => {
+                            if (res.status === 200) {
+                                this.success = 1;
+                                this.shortenUrlString = res.data.url;
+                                this.error = 0;
+                                this.errorMessage = "";
+                                console.log(res);
+                            } else {
+                                console.log(res);
+                            }
+                        }).catch(err => {
+                            //handle errors here
+                            this.error = 1;
+                            this.errorMessage = err.response.data.error;
+                        });
+                },
+                validateUrl: function (str) {
+                    var re = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
+                    return re.test(str);
+                }
+            }
+        })
+
+    </script>
+
+</body>
+
+</html>
