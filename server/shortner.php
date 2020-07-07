@@ -53,6 +53,8 @@ class Shortener
             } else {
                 $this->normalRedirect($q);
             }
+        }else{
+            $this->pageNotFound();
         }
 
     }
